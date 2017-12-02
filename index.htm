@@ -95,7 +95,7 @@
                 darkgreySegment.setEnabled(false);
 
                 // Circular race track
-                var x = 40; // meters from origo
+                var x = 40; // meters from origo => radius
                 var y = 0; // ground
                 var z = 0; // first segment of the road
 
@@ -130,24 +130,45 @@
             var player;
 
             var createPlayer = function(scene) {
+                var snow = new BABYLON.StandardMaterial("snow", scene);
+                snow.diffuseTexture = new BABYLON.Texture("snow.png", scene);
+                snow.specularTexture = new BABYLON.Texture("snow.png", scene);
+                snow.emissiveTexture = new BABYLON.Texture("snow.png", scene);
+                snow.ambientTexture = new BABYLON.Texture("snow.png", scene);
+
+                var carrot = new BABYLON.StandardMaterial("carrot", scene);
+                carrot.diffuseTexture = new BABYLON.Texture("carrot.png", scene);
+                carrot.specularTexture = new BABYLON.Texture("carrot.png", scene);
+                carrot.emissiveTexture = new BABYLON.Texture("carrot.png", scene);
+                carrot.ambientTexture = new BABYLON.Texture("carrot.png", scene);
+
                 player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: 0.5}, scene);
                 player.position = new BABYLON.Vector3(40, 1, 0);
                 player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+                player.material = snow;
 
                 playerTorso = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.4}, scene);
                 playerTorso.parent = player;
                 playerTorso.position = new BABYLON.Vector3(0, 0.5/2+0.4/2, 0);
-                //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+                playerTorso.material = snow;
+                playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
                 playerHead = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.3}, scene);
                 playerHead.parent = playerTorso;
                 playerHead.position = new BABYLON.Vector3(0, 0.4/2+0.3/2, 0);
-                //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+                playerHead.material = snow;
+                playerHead.physicsImpostor = new BABYLON.PhysicsImpostor(playerHead, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
                 playerNose = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.05}, scene);
                 playerNose.parent = playerHead;
                 playerNose.position = new BABYLON.Vector3(0, 0, (0.3/2+0.05/2)*-1.0);
+                playerNose.material = carrot;
                 //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+
+                player.physicsImpostor.createJoint(playerTorso.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
+                playerTorso.physicsImpostor.createJoint(playerHead.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
+
+
             }
 
             var directionVector = new BABYLON.Vector3();
@@ -159,6 +180,12 @@
                     player.lookAt(direction);
                 }
             });
+            window.addEventListener("mousedown", function () {
+                keys.forward = true;
+            });
+            window.addEventListener("mouseup", function () {
+                keys.forward = false;
+            });
 
             /******* Add the create scene function ******/
             var createScene = function () {
@@ -168,7 +195,8 @@
                 
                     // Lights
                     var light0 = new BABYLON.DirectionalLight("Omni", new BABYLON.Vector3(-2, -5, 2), scene);
-                    var light1 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(2, -5, -2), scene);
+//                    var light1 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(2, -5, -2), scene);
+                    var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
 
                     createRoad(scene)
                     createPlayer(scene)
@@ -176,28 +204,38 @@
                     // Parameters: name, position, scene    
                     var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
 
-                    camera.radius = 2;
-                    camera.heightOffset = 2;
+                    camera.radius = 6;
+                    camera.heightOffset = 3;
                     camera.rotationOffset = 0;
-                    camera.cameraAcceleration = 0.005
+                    camera.cameraAcceleration = 0.05
                     //camera.maxCameraSpeed = 10
-                    camera.attachControl(canvas, true);
+                    //camera.attachControl(canvas, true);
                     //camera.target = targetMesh;   // version 2.4 and earlier
                     camera.lockedTarget = player; //version 2.5 onwards
 
-                
-                    //Then apply collisions and gravity to the active camera
-                    //camera.checkCollisions = false;
-                    //camera.applyGravity = false;
-                
-                    //Set the ellipsoid around the camera (e.g. your player's size)
-                    //camera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
-                
-                    //finally, say which mesh will be collisionable
-//                    ground.checkCollisions = true;
-//                    box.checkCollisions = true;
-                
-                    scene.clearColor = new BABYLON.Color3(0.5, 0.8, 0.5);
+                    scene.clearColor = new BABYLON.Color3(0.0, 0.0, 0.1);
+
+                    var spriteManagerBeer = new BABYLON.SpriteManager("beerManager", "beer.png", 200, 266, scene);
+
+                    var x = 40;
+                    var y = 0.5;
+                    var z = 0;
+                    
+                    numBeers = 20;
+                    var angleIncrement = 360.0 / numBeers;
+                    var angle = 0.0;
+                    for (let index = 0; index < numBeers; index++) {
+                        var angleRadians = angle * Math.PI / 180.0;
+
+                        var xp = z*Math.sin(angleRadians) + x*Math.cos(angleRadians);
+                        var yp = y
+                        var zp = z*Math.cos(angleRadians) - x*Math.sin(angleRadians);
+
+                        var beer = new BABYLON.Sprite("beer", spriteManagerBeer);
+                        beer.position = new BABYLON.Vector3(xp, yp, zp);
+
+                        angle += angleIncrement;
+                    }
 
                         return scene;
                 };
@@ -207,9 +245,10 @@
                 var scene = createScene(); //Call the createScene function
 
             engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
-                if (keys.forward==1) {		
-                    player.position.x += directionVector.x / 100 ;		
-                    player.position.z += directionVector.z / 100 ;			
+                if (keys.forward==1) {
+                    unitvector = directionVector.normalize();		
+                    player.position.x += unitvector.x / 5;		
+                    player.position.z += unitvector.z / 5;			
                 }
 
                 scene.render();
