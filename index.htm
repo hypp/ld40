@@ -278,7 +278,7 @@
             var playerAngle = 0.0;
             engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
 
-                var rotationSpeed = Math.max(0.7, score / 10); 
+                var rotationSpeed = Math.max(0.7, score / 5); 
 
                 if (keys.left == true) {
                     playerAngle = (playerAngle - rotationSpeed) % 360;
@@ -302,21 +302,32 @@
                     player.position.z += unitvector.z / 5;			
                 }
 
-                //playerTorso.position = player.position.add(new BABYLON.Vector3(0, 0.5/2+0.4/2, 0));
+                var numDisabled = 0;
 
-                allBeers.forEach(element => {
-                    if (element.isEnabled() &&
-                        player.intersectsMesh(element, false)) {
-                        element.setEnabled(false);
-                        var particleSystem = new BABYLON.ParticleSystem("particles", 100, scene);
-                        particleSystem.particleTexture = new BABYLON.Texture("beer.png", scene);
-                        particleSystem.emitter = element.position;
-                        particleSystem.disposeOnStop = true;
-                        particleSystem.targetStopDuration = 1;
-                        particleSystem.start();
-                        score += 1;
-                    }
-                });
+                for (let index = 0; index < allBeers.length; index++) {
+                    const element = allBeers[index];
+                    
+                    if (element.isEnabled()) {
+
+                        if (player.intersectsMesh(element, false)) {
+                            element.setEnabled(false);
+                            element.restartCount = 50*10;
+
+                            var particleSystem = new BABYLON.ParticleSystem("particles", 100, scene);
+                            particleSystem.particleTexture = new BABYLON.Texture("beer.png", scene);
+                            particleSystem.emitter = element.position;
+                            particleSystem.disposeOnStop = true;
+                            particleSystem.targetStopDuration = 1;
+                            particleSystem.start();
+                            score += 1;
+                        }
+                    } else {
+                        element.restartCount -= 1;
+                        if (element.restartCount < 0) {
+                            element.setEnabled(true);
+                        }
+                    } // if isEnabled()
+                } // for
 
                 scene.render();
             });
