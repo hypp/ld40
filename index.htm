@@ -129,6 +129,22 @@
 
             var player;
 
+            var createPlayer = function(scene) {
+                player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: 0.5}, scene);
+                player.position = new BABYLON.Vector3(40, 1, 0);
+                player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+
+                playerTorso = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.4}, scene);
+                playerTorso.parent = player;
+                playerTorso.position = new BABYLON.Vector3(0, 0.5/2+0.4/2, 0);
+                //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+
+                playerHead = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.3}, scene);
+                playerHead.parent = playerTorso;
+                playerHead.position = new BABYLON.Vector3(0, 0.4/2+0.3/2, 0);
+                //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+            }
+
             /******* Add the create scene function ******/
             var createScene = function () {
 
@@ -138,23 +154,15 @@
                     // Lights
                     var light0 = new BABYLON.DirectionalLight("Omni", new BABYLON.Vector3(-2, -5, 2), scene);
                     var light1 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(2, -5, -2), scene);
-                
-                    // Need a free camera for collisions
-                    //var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(40, 2, 0), scene);
-                    // var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, BABYLON.Vector3.Zero(), scene);
-                    //camera.attachControl(canvas, true);
-                
-                    createRoad(scene)
 
-                    player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: 0.5}, scene);
-                    player.position = new BABYLON.Vector3(40, 1, 0);
-                    player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+                    createRoad(scene)
+                    createPlayer(scene)
 
                     // Parameters: name, position, scene    
                     var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
 
-                    camera.radius = 30;
-                    camera.heightOffset = 10;
+                    camera.radius = 2;
+                    camera.heightOffset = 2;
                     camera.rotationOffset = 0;
                     camera.cameraAcceleration = 0.005
                     camera.maxCameraSpeed = 10
