@@ -151,24 +151,65 @@
                 playerTorso.parent = player;
                 playerTorso.position = new BABYLON.Vector3(0, 0.5/2+0.4/2, 0);
                 playerTorso.material = snow;
-                playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+                //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
-                playerHead = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.3}, scene);
+                playerHead = BABYLON.MeshBuilder.CreateSphere("playerHead", {diameter: 0.3}, scene);
                 playerHead.parent = playerTorso;
                 playerHead.position = new BABYLON.Vector3(0, 0.4/2+0.3/2, 0);
                 playerHead.material = snow;
-                playerHead.physicsImpostor = new BABYLON.PhysicsImpostor(playerHead, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+                //playerHead.physicsImpostor = new BABYLON.PhysicsImpostor(playerHead, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
-                playerNose = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.05}, scene);
+                playerNose = BABYLON.MeshBuilder.CreateSphere("playerNose", {diameter: 0.05}, scene);
                 playerNose.parent = playerHead;
                 playerNose.position = new BABYLON.Vector3(0, 0, (0.3/2+0.05/2)*-1.0);
                 playerNose.material = carrot;
-                //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+                //playerNose.physicsImpostor = new BABYLON.PhysicsImpostor(playerNose, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
-                player.physicsImpostor.createJoint(playerTorso.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
-                playerTorso.physicsImpostor.createJoint(playerHead.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
+                //playerHead.physicsImpostor.createJoint(playerTorso.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
+                //playerTorso.physicsImpostor.createJoint(player.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
 
 
+            }
+
+            var createBeer = function(scene) {
+                var beerMaterial = new BABYLON.StandardMaterial("beer", scene);
+                beerMaterial.diffuseTexture = new BABYLON.Texture("beer.png", scene);
+                beerMaterial.specularTexture = new BABYLON.Texture("beer.png", scene);
+                beerMaterial.emissiveTexture = new BABYLON.Texture("beer.png", scene);
+                beerMaterial.ambientTexture = new BABYLON.Texture("beer.png", scene);
+                beerMaterial.diffuseTexture.hasAlpha = true;
+                beerMaterial.specularTexture.hasAlpha = true;
+                beerMaterial.emissiveTexture.hasAlpha = true;
+                beerMaterial.ambientTexture.hasAlpha = true;
+                beerMaterial.backFaceCulling = false;
+
+                var beerTemplate = BABYLON.MeshBuilder.CreatePlane("beer", 0.1, scene);
+                
+                beerTemplate.material = beerMaterial;
+                beerTemplate.setEnabled(false);
+
+                var x = -40;
+                var y = 0.5;
+                var z = 0;
+                
+                numBeers = 20;
+                var angleIncrement = 360.0 / numBeers;
+                var angle = 0.0;
+                for (let index = 0; index < numBeers; index++) {
+                    var angleRadians = angle * Math.PI / 180.0;
+
+                    var xp = z*Math.sin(angleRadians) + x*Math.cos(angleRadians);
+                    var yp = y
+                    var zp = z*Math.cos(angleRadians) - x*Math.sin(angleRadians);
+
+                    var beer = beerTemplate.createInstance("beerindex" + index);
+                    beer.position = new BABYLON.Vector3(xp, yp, zp);
+                    beer.rotate(BABYLON.Axis.Y, angleRadians, BABYLON.Space.LOCAL);                    
+                    beer.setEnabled(true);
+
+                    angle += angleIncrement;
+
+                }
             }
 
             var directionVector = new BABYLON.Vector3();
@@ -198,8 +239,9 @@
 //                    var light1 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(2, -5, -2), scene);
                     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
 
-                    createRoad(scene)
-                    createPlayer(scene)
+                    createRoad(scene);
+                    createPlayer(scene);
+                    createBeer(scene);
 
                     // Parameters: name, position, scene    
                     var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
@@ -214,28 +256,6 @@
                     camera.lockedTarget = player; //version 2.5 onwards
 
                     scene.clearColor = new BABYLON.Color3(0.0, 0.0, 0.1);
-
-                    var spriteManagerBeer = new BABYLON.SpriteManager("beerManager", "beer.png", 200, 266, scene);
-
-                    var x = 40;
-                    var y = 0.5;
-                    var z = 0;
-                    
-                    numBeers = 20;
-                    var angleIncrement = 360.0 / numBeers;
-                    var angle = 0.0;
-                    for (let index = 0; index < numBeers; index++) {
-                        var angleRadians = angle * Math.PI / 180.0;
-
-                        var xp = z*Math.sin(angleRadians) + x*Math.cos(angleRadians);
-                        var yp = y
-                        var zp = z*Math.cos(angleRadians) - x*Math.sin(angleRadians);
-
-                        var beer = new BABYLON.Sprite("beer", spriteManagerBeer);
-                        beer.position = new BABYLON.Vector3(xp, yp, zp);
-
-                        angle += angleIncrement;
-                    }
 
                         return scene;
                 };
