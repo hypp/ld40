@@ -144,7 +144,7 @@
                 carrot.ambientTexture = new BABYLON.Texture("carrot.png", scene);
 
                 player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: 0.5}, scene);
-                player.position = new BABYLON.Vector3(40, 0.25, 0);
+                player.position = new BABYLON.Vector3(35, 0.25, 0);
                 //player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
                 player.material = snow;
 
@@ -218,6 +218,7 @@
                 }
             }
 
+            /*
             var directionVector = new BABYLON.Vector3();
             window.addEventListener("mousemove", function () {
                 var pickResult = scene.pick(scene.pointerX, scene.pointerY);
@@ -233,6 +234,7 @@
             window.addEventListener("mouseup", function () {
                 keys.forward = false;
             });
+            */
 
             /******* Add the create scene function ******/
             var createScene = function () {
@@ -271,8 +273,29 @@
                 var scene = createScene(); //Call the createScene function
 
             
+            var score = 0.0;
 
+            var playerAngle = 0.0;
             engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
+
+                var rotationSpeed = Math.max(0.7, score / 10); 
+
+                if (keys.left == true) {
+                    playerAngle = (playerAngle - rotationSpeed) % 360;
+                }
+                if (keys.right == true) {
+                    playerAngle = (playerAngle + rotationSpeed) % 360;
+                }
+
+                var angleRadians = playerAngle * Math.PI / 180.0;
+                var xp = 1000*Math.sin(angleRadians) + 1000*Math.cos(angleRadians);
+                var yp = 1
+                var zp = 1000*Math.cos(angleRadians) - 1000*Math.sin(angleRadians);
+                var directionVector = new BABYLON.Vector3(xp,yp,zp);
+                directionVector = directionVector.subtract(player.position);
+                player.lookAt(directionVector);
+                
+
                 if (keys.forward==1) {
                     unitvector = directionVector.normalize();		
                     player.position.x += unitvector.x / 5;		
@@ -291,6 +314,7 @@
                         particleSystem.disposeOnStop = true;
                         particleSystem.targetStopDuration = 1;
                         particleSystem.start();
+                        score += 1;
                     }
                 });
 
