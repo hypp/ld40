@@ -120,7 +120,7 @@
                     segment.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.LOCAL);
                     segment.rotate(BABYLON.Axis.Z, -angleRadians, BABYLON.Space.LOCAL);                    
                     segment.setEnabled(true);
-                    segment.physicsImpostor = new BABYLON.PhysicsImpostor(segment, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
+                    //segment.physicsImpostor = new BABYLON.PhysicsImpostor(segment, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
 
                     angle += angleIncrement;
                     //z += 20.0;
@@ -128,6 +128,7 @@
             }
 
             var player;
+            var playerTorso;
 
             var createPlayer = function(scene) {
                 var snow = new BABYLON.StandardMaterial("snow", scene);
@@ -143,8 +144,8 @@
                 carrot.ambientTexture = new BABYLON.Texture("carrot.png", scene);
 
                 player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: 0.5}, scene);
-                player.position = new BABYLON.Vector3(40, 1, 0);
-                player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+                player.position = new BABYLON.Vector3(40, 0.25, 0);
+                //player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
                 player.material = snow;
 
                 playerTorso = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.4}, scene);
@@ -170,6 +171,8 @@
 
 
             }
+
+            var allBeers = [];
 
             var createBeer = function(scene) {
                 var beerMaterial = new BABYLON.StandardMaterial("beer", scene);
@@ -206,6 +209,9 @@
                     beer.position = new BABYLON.Vector3(xp, yp, zp);
                     beer.rotate(BABYLON.Axis.Y, angleRadians, BABYLON.Space.LOCAL);                    
                     beer.setEnabled(true);
+                    //beer.physicsImpostor = new BABYLON.PhysicsImpostor(beer, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+
+                    allBeers.push(beer);
 
                     angle += angleIncrement;
 
@@ -232,7 +238,7 @@
             var createScene = function () {
 
                 var scene = new BABYLON.Scene(engine);
-                scene.enablePhysics();
+                //scene.enablePhysics();
                 
                     // Lights
                     var light0 = new BABYLON.DirectionalLight("Omni", new BABYLON.Vector3(-2, -5, 2), scene);
@@ -270,6 +276,8 @@
                     player.position.x += unitvector.x / 5;		
                     player.position.z += unitvector.z / 5;			
                 }
+
+                //playerTorso.position = player.position.add(new BABYLON.Vector3(0, 0.5/2+0.4/2, 0));
 
                 scene.render();
             });
