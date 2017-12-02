@@ -143,7 +143,22 @@
                 playerHead.parent = playerTorso;
                 playerHead.position = new BABYLON.Vector3(0, 0.4/2+0.3/2, 0);
                 //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+
+                playerNose = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.05}, scene);
+                playerNose.parent = playerHead;
+                playerNose.position = new BABYLON.Vector3(0, 0, (0.3/2+0.05/2)*-1.0);
+                //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
             }
+
+            var directionVector = new BABYLON.Vector3();
+            window.addEventListener("mousemove", function () {
+                var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                if (pickResult.hit) {
+                    var direction = pickResult.pickedPoint;
+                    directionVector = direction.subtract(player.position);  
+                    player.lookAt(direction);
+                }
+            });
 
             /******* Add the create scene function ******/
             var createScene = function () {
@@ -165,7 +180,7 @@
                     camera.heightOffset = 2;
                     camera.rotationOffset = 0;
                     camera.cameraAcceleration = 0.005
-                    camera.maxCameraSpeed = 10
+                    //camera.maxCameraSpeed = 10
                     camera.attachControl(canvas, true);
                     //camera.target = targetMesh;   // version 2.4 and earlier
                     camera.lockedTarget = player; //version 2.5 onwards
@@ -192,19 +207,11 @@
                 var scene = createScene(); //Call the createScene function
 
             engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
-                if (keys.left == true) {
-                    player.position.x += 0.1;
+                if (keys.forward==1) {		
+                    player.position.x += directionVector.x / 100 ;		
+                    player.position.z += directionVector.z / 100 ;			
                 }
-                if (keys.right == true) {
-                    player.position.x -= 0.1;
-                }
-                if (keys.forward == true) {
-                    player.position.z += 0.1;
-                }
-                if (keys.back == true) {
-                    player.position.z -= 0.1;
-                }
-                
+
                 scene.render();
             });
 
