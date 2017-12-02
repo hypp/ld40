@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <title>LD 40 - The more you have, the worse it is</title>
+
+      <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+
+   </head>
+
+   <body>
+
+    <canvas id="renderCanvas" touch-action="none"></canvas> //touch-action="none" for best results from PEP
+
+    <script>
+
+            var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
+
+            var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+
+
+            var createRoad = function (scene) {
+                var greyMaterial = new BABYLON.StandardMaterial("greyGroundMat", scene);
+                greyMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+                greyMaterial.backFaceCulling = false;
+                var greySegment = BABYLON.Mesh.CreatePlane("greyGround", 20.0, scene);
+                greySegment.material = greyMaterial;
+                greySegment.setEnabled(false);
+
+                var darkgreyMaterial = new BABYLON.StandardMaterial("darkgreyGroundMat", scene);
+                darkgreyMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+                darkgreyMaterial.backFaceCulling = false;
+                var darkgreySegment = BABYLON.Mesh.CreatePlane("darkgreyGround", 20.0, scene);
+                darkgreySegment.material = darkgreyMaterial;
+                darkgreySegment.setEnabled(false);
+
+                // Circular race track
+                var x = 40; // meters from origo
+                var y = 0; // ground
+                var z = 0; // first segment of the road
+
+                var numSegments = 20;
+                var angleIncrement = 360.0 / numSegments;
+                var angle = 0.0;
+
+                for (let index = 0; index < numSegments; index++) {
+                    var angleRadians = angle * Math.PI / 180.0;
+
+                    var xp = z*Math.sin(angleRadians) + x*Math.cos(angleRadians);
+                    var yp = y
+                    var zp = z*Math.cos(angleRadians) - x*Math.sin(angleRadians);
+
+                    var segment;
+                    if (index % 1 == 0) {
+                        segment = darkgreySegment.createInstance("index" + index);
+                    } else {
+                        segment = greySegment.createInstance("index" + index);
+                    }
+                    segment.position = new BABYLON.Vector3(xp, yp, zp);
+                    segment.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.LOCAL);
+                    segment.rotate(BABYLON.Axis.Z, -angleRadians, BABYLON.Space.LOCAL);                    
+                    segment.setEnabled(true);
+                    segment.checkCollisions = true;
+
+                    angle += angleIncrement;
+                    //z += 20.0;
+                }
+            }
+
+            /******* Add the create scene function ******/
+            var createScene = function () {
+
+                var scene = new BABYLON.Scene(engine);
+                
+                    // Lights
+                    var light0 = new BABYLON.DirectionalLight("Omni", new BABYLON.Vector3(-2, -5, 2), scene);
+                    var light1 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(2, -5, -2), scene);
+                
+                    // Need a free camera for collisions
+                    var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(40, 2, 0), scene);
+                    //var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, BABYLON.Vector3.Zero(), scene);
+                    camera.attachControl(canvas, true);
+                
+                    createRoad(scene)
+
+                    //Set gravity for the scene (G force like, on Y-axis)
+                    scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
+                
+                    // Enable Collisions
+                    scene.collisionsEnabled = true;
+                
+                    //Then apply collisions and gravity to the active camera
+                    camera.checkCollisions = true;
+                    camera.applyGravity = true;
+                
+                    //Set the ellipsoid around the camera (e.g. your player's size)
+                    camera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
+                
+                    //finally, say which mesh will be collisionable
+//                    ground.checkCollisions = true;
+//                    box.checkCollisions = true;
+                
+                    scene.clearColor = new BABYLON.Color3(0.5, 0.8, 0.5);
+
+                        return scene;
+                };
+
+                /******* End of the create scene function ******/    
+
+                var scene = createScene(); //Call the createScene function
+
+            engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
+                    scene.render();
+            });
+
+
+            window.addEventListener("resize", function () { // Watch for browser/canvas resize events
+                    engine.resize();
+            });
+    </script>
+
+   </body>
+
+</html>
