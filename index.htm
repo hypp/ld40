@@ -21,6 +21,7 @@
         }
     </style>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
 
@@ -31,6 +32,47 @@
     <canvas id="renderCanvas" touch-action="none"></canvas> //touch-action="none" for best results from PEP
 
     <script>
+
+        var keys={
+            letft:false,
+            right:false,
+            forward:false,
+            back:false
+        };
+        window.addEventListener("keydown", handleKeyDown, false);
+        window.addEventListener("keyup", handleKeyUp, false);
+        function handleKeyDown(evt){    
+            if (evt.keyCode==65) {
+                //A        
+                keys.left=true;    
+            }    
+            if (evt.keyCode==68) {
+                //D        
+                keys.right=true;    
+            }    
+            if (evt.keyCode==87) {
+                //W        
+                keys.forward=true;    
+            }    
+            if (evt.keyCode==83) {
+                //S        
+                keys.back=true;    
+            }
+        }
+        function handleKeyUp(evt) {    
+            if (evt.keyCode==65) {        
+                keys.left=false;    
+            }    
+            if (evt.keyCode==68) {
+                keys.right=false;    
+            }    
+            if (evt.keyCode==87) {        
+                keys.forward=false;    
+            }    
+            if (evt.keyCode==83) {        
+                keys.back=false;    
+            }
+        }
 
             var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
 
@@ -78,41 +120,55 @@
                     segment.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.LOCAL);
                     segment.rotate(BABYLON.Axis.Z, -angleRadians, BABYLON.Space.LOCAL);                    
                     segment.setEnabled(true);
-                    segment.checkCollisions = true;
+                    segment.physicsImpostor = new BABYLON.PhysicsImpostor(segment, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
 
                     angle += angleIncrement;
                     //z += 20.0;
                 }
             }
 
+            var player;
+
             /******* Add the create scene function ******/
             var createScene = function () {
 
                 var scene = new BABYLON.Scene(engine);
+                scene.enablePhysics();
                 
                     // Lights
                     var light0 = new BABYLON.DirectionalLight("Omni", new BABYLON.Vector3(-2, -5, 2), scene);
                     var light1 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(2, -5, -2), scene);
                 
                     // Need a free camera for collisions
-                    var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(40, 2, 0), scene);
-                    //var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, BABYLON.Vector3.Zero(), scene);
-                    camera.attachControl(canvas, true);
+                    //var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(40, 2, 0), scene);
+                    // var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, BABYLON.Vector3.Zero(), scene);
+                    //camera.attachControl(canvas, true);
                 
                     createRoad(scene)
 
-                    //Set gravity for the scene (G force like, on Y-axis)
-                    scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
-                
-                    // Enable Collisions
-                    scene.collisionsEnabled = true;
+                    player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: 0.5}, scene);
+                    player.position = new BABYLON.Vector3(40, 1, 0);
+                    player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+
+                    // Parameters: name, position, scene    
+                    var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
+
+                    camera.radius = 30;
+                    camera.heightOffset = 10;
+                    camera.rotationOffset = 0;
+                    camera.cameraAcceleration = 0.005
+                    camera.maxCameraSpeed = 10
+                    camera.attachControl(canvas, true);
+                    //camera.target = targetMesh;   // version 2.4 and earlier
+                    camera.lockedTarget = player; //version 2.5 onwards
+
                 
                     //Then apply collisions and gravity to the active camera
-                    camera.checkCollisions = true;
-                    camera.applyGravity = true;
+                    //camera.checkCollisions = false;
+                    //camera.applyGravity = false;
                 
                     //Set the ellipsoid around the camera (e.g. your player's size)
-                    camera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
+                    //camera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
                 
                     //finally, say which mesh will be collisionable
 //                    ground.checkCollisions = true;
@@ -128,13 +184,28 @@
                 var scene = createScene(); //Call the createScene function
 
             engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
-                    scene.render();
+                if (keys.left == true) {
+                    player.position.x += 0.1;
+                }
+                if (keys.right == true) {
+                    player.position.x -= 0.1;
+                }
+                if (keys.forward == true) {
+                    player.position.z += 0.1;
+                }
+                if (keys.back == true) {
+                    player.position.z -= 0.1;
+                }
+                
+                scene.render();
             });
 
 
             window.addEventListener("resize", function () { // Watch for browser/canvas resize events
                     engine.resize();
             });
+
+            
     </script>
 
    </body>
