@@ -270,6 +270,8 @@
 
                 var scene = createScene(); //Call the createScene function
 
+            
+
             engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
                 if (keys.forward==1) {
                     unitvector = directionVector.normalize();		
@@ -278,6 +280,19 @@
                 }
 
                 //playerTorso.position = player.position.add(new BABYLON.Vector3(0, 0.5/2+0.4/2, 0));
+
+                allBeers.forEach(element => {
+                    if (element.isEnabled() &&
+                        player.intersectsMesh(element, false)) {
+                        element.setEnabled(false);
+                        var particleSystem = new BABYLON.ParticleSystem("particles", 100, scene);
+                        particleSystem.particleTexture = new BABYLON.Texture("beer.png", scene);
+                        particleSystem.emitter = element.position;
+                        particleSystem.disposeOnStop = true;
+                        particleSystem.targetStopDuration = 1;
+                        particleSystem.start();
+                    }
+                });
 
                 scene.render();
             });
