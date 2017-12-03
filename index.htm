@@ -293,7 +293,7 @@
             advancedTexture.addControl(textSCore);   
 
             var introControls = [];
-            var messages = [
+            var introMessages = [
                 "The more you have, the worse it is.",
                 "A game for Ludum Dare 40 by Mathias Olsson.",
                 "Goal: Drink as many beers as you can.",
@@ -303,8 +303,8 @@
             ];
 
             var pos = -25;
-            for (let index = 0; index < messages.length; index++) {
-                const element = messages[index];
+            for (let index = 0; index < introMessages.length; index++) {
+                const element = introMessages[index];
                 var text = new BABYLON.GUI.TextBlock();
                 text.text = element;
                 text.left = 0;
@@ -318,6 +318,31 @@
                 introControls.push(text);
                 pos += 10;
             }
+
+            var outtroControls = [];
+            var outtroMessages = [
+                "Looks like you couldn't handle the alcohol.",
+                "Please reload to try again."
+            ];
+
+            var pos = -5;
+            for (let index = 0; index < outtroMessages.length; index++) {
+                const element = outtroMessages[index];
+                var text = new BABYLON.GUI.TextBlock();
+                text.text = element;
+                text.left = 0;
+                text.top = "" + pos + "%";
+                text.color = "red";    
+                text.height = "40px";
+                text.fontSize = 24;
+                text.zIndex = 1;
+                text.isVisible = false;
+                advancedTexture.addControl(text);
+
+                outtroControls.push(text);
+                pos += 10;
+            }
+            
 
             var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
             var klunks = [];
@@ -375,6 +400,10 @@
                     
                     if (player.alive && !falling.isPlaying) {
                         falling.play();
+                        for (let index = 0; index < outtroControls.length; index++) {
+                            const element = outtroControls[index];
+                            element.isVisible = true;
+                        }
                     }
                     player.alive = false;
                 }
