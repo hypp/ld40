@@ -258,6 +258,20 @@
                     beer.setEnabled(true);
                     //beer.physicsImpostor = new BABYLON.PhysicsImpostor(beer, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
+                    var particleSystem = new BABYLON.ParticleSystem("beerFoam", 1000, scene);
+                    particleSystem.particleTexture = new BABYLON.Texture("pixel.png", scene);
+                    particleSystem.emitter = beer;
+                    particleSystem.minSize = 0.01;
+                    particleSystem.maxSize = 0.03;
+                    particleSystem.emitRate = 100;
+                    particleSystem.maxLifeTime = 0.9;
+                    particleSystem.direction1 = new BABYLON.Vector3(0,1,0);
+                    particleSystem.direction2 = new BABYLON.Vector3(0,1,0);
+                    particleSystem.minEmitBox = new BABYLON.Vector3(0,-0.3,0);
+                    particleSystem.maxEmitBox = new BABYLON.Vector3(-0.3,-0.3,0);       
+                    particleSystem.start();
+                    beer.particleSystem = particleSystem;
+
                     allBeers.push(beer);
 
                     angle += angleIncrement;
