@@ -143,26 +143,34 @@
                 carrot.emissiveTexture = new BABYLON.Texture("carrot.png", scene);
                 carrot.ambientTexture = new BABYLON.Texture("carrot.png", scene);
 
-                player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: 0.5}, scene);
-                player.position = new BABYLON.Vector3(35, 0.25, 0);
+                var playerRadius = 0.8;
+                var playerDiameter = playerRadius*2;
+                player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: playerDiameter}, scene);
+                player.position = new BABYLON.Vector3(35, playerRadius, 0);
                 //player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
                 player.material = snow;
 
-                playerTorso = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: 0.4}, scene);
+                var torsoRadius = playerRadius*0.75;
+                var torsoDiameter = torsoRadius*2;
+                var playerTorso = BABYLON.MeshBuilder.CreateSphere("playerTorso", {diameter: torsoDiameter}, scene);
                 playerTorso.parent = player;
-                playerTorso.position = new BABYLON.Vector3(0, 0.5/2+0.4/2, 0);
+                playerTorso.position = new BABYLON.Vector3(0, playerRadius+torsoRadius, 0);
                 playerTorso.material = snow;
                 //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
-                playerHead = BABYLON.MeshBuilder.CreateSphere("playerHead", {diameter: 0.3}, scene);
+                var headRadius = torsoRadius*0.75;
+                var headDiameter = headRadius*2;
+                playerHead = BABYLON.MeshBuilder.CreateSphere("playerHead", {diameter: headDiameter}, scene);
                 playerHead.parent = playerTorso;
-                playerHead.position = new BABYLON.Vector3(0, 0.4/2+0.3/2, 0);
+                playerHead.position = new BABYLON.Vector3(0, torsoRadius+headRadius, 0);
                 playerHead.material = snow;
                 //playerHead.physicsImpostor = new BABYLON.PhysicsImpostor(playerHead, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
-                playerNose = BABYLON.MeshBuilder.CreateSphere("playerNose", {diameter: 0.05}, scene);
+                var noseRadius = 0.025;
+                var noseDiameter = noseRadius*2;
+                playerNose = BABYLON.MeshBuilder.CreateSphere("playerNose", {diameter: noseDiameter}, scene);
                 playerNose.parent = playerHead;
-                playerNose.position = new BABYLON.Vector3(0, 0, (0.3/2+0.05/2)*-1.0);
+                playerNose.position = new BABYLON.Vector3(0, 0, (headRadius+noseRadius)*-1.0);
                 playerNose.material = carrot;
                 //playerNose.physicsImpostor = new BABYLON.PhysicsImpostor(playerNose, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
@@ -239,9 +247,6 @@
                     camera.heightOffset = 3;
                     camera.rotationOffset = 0;
                     camera.cameraAcceleration = 0.05
-                    //camera.maxCameraSpeed = 10
-                    //camera.attachControl(canvas, true);
-                    //camera.target = targetMesh;   // version 2.4 and earlier
                     camera.lockedTarget = player; //version 2.5 onwards
 
                     scene.clearColor = new BABYLON.Color3(0.0, 0.0, 0.1);
@@ -253,7 +258,7 @@
 
             var scene = createScene(); //Call the createScene function
 
-            //var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
+            var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
             var klunks = [];
             for (let index = 1; index < 6; index++) {
                 klunk = new BABYLON.Sound("klunk" + index, "klunk" + index + ".wav", scene)
