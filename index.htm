@@ -21,9 +21,9 @@
         }
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    <script src="https://preview.babylonjs.com/gui/babylon.gui.js"></script>
 
    </head>
 
@@ -58,7 +58,7 @@
                     keys.right=true;    
                 }
             }    
-            if (evt.keyCode==87 || evt.keycode==32 || evt.keyCode==38) {
+            if (evt.keyCode==87 || evt.keyCode==32 || evt.keyCode==38) {
                 //W or space or up arrow
                 keys.forward=true;    
             }    
@@ -248,6 +248,7 @@
                 }
             }
 
+            var camera;
             /******* Add the create scene function ******/
             var createScene = function () {
 
@@ -263,7 +264,7 @@
                     createBeer(scene);
 
                     // Parameters: name, position, scene    
-                    var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
+                    camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
 
                     camera.radius = 6;
                     camera.heightOffset = 3;
@@ -280,7 +281,45 @@
 
             var scene = createScene(); //Call the createScene function
 
-            //var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+            var textSCore = new BABYLON.GUI.TextBlock();
+            textSCore.color = "white";    
+            textSCore.height = "40px";
+            textSCore.fontSize = 24;
+            textSCore.zIndex = 1;
+            textSCore.verticalAlignment	= BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+            textSCore.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+            advancedTexture.addControl(textSCore);   
+
+            var introControls = [];
+            var messages = [
+                "The more you have, the worse it is.",
+                "A game for Ludum Dare 40 by Mathias Olsson.",
+                "Goal: Drink as many beers as you can.",
+                "The more ju drink the harder it is to control the iceman.",
+                "Controls: A & D or left arrow & right arrow.",
+                "Press SPACE to start."
+            ];
+
+            var pos = -25;
+            for (let index = 0; index < messages.length; index++) {
+                const element = messages[index];
+                var text = new BABYLON.GUI.TextBlock();
+                text.text = element;
+                text.left = 0;
+                text.top = "" + pos + "%";
+                text.color = "red";    
+                text.height = "40px";
+                text.fontSize = 24;
+                text.zIndex = 1;
+                advancedTexture.addControl(text);
+
+                introControls.push(text);
+                pos += 10;
+            }
+
+            var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
             var klunks = [];
             for (let index = 1; index < 6; index++) {
                 klunk = new BABYLON.Sound("klunk" + index, "klunk" + index + ".wav", scene)
@@ -314,7 +353,12 @@
                 if (keys.forward==1) {
                     unitvector = directionVector.normalize();		
                     player.position.x += unitvector.x / 5;		
-                    player.position.z += unitvector.z / 5;			
+                    player.position.z += unitvector.z / 5;	
+
+                    for (let index = 0; index < introControls.length; index++) {
+                        const element = introControls[index];
+                        element.isVisible = false;
+                    }
                 }
 
                 // Check if player died
@@ -364,6 +408,8 @@
                         }
                     } // if isEnabled()
                 } // for
+
+                textSCore.text = "Score: " + score;
 
                 scene.render();
             });
