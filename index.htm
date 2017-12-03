@@ -312,6 +312,16 @@
 
             var scene = createScene(); //Call the createScene function
 
+            var skybox = BABYLON.Mesh.CreateBox("skyBox", 100.0, scene);
+            var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+            skyboxMaterial.backFaceCulling = false;
+            skyboxMaterial.disableLighting = true;
+            skybox.material = skyboxMaterial;           
+            skybox.infiniteDistance = true;
+            skyboxMaterial.disableLighting = true;
+            skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox", scene);
+            skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE; 
+
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
             var textSCore = new BABYLON.GUI.TextBlock();
