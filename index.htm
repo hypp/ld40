@@ -169,7 +169,7 @@
                 //playerHead.physicsImpostor.createJoint(playerTorso.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
                 //playerTorso.physicsImpostor.createJoint(player.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
 
-
+                player.alive = true;
             }
 
             var allBeers = [];
@@ -218,24 +218,6 @@
                 }
             }
 
-            /*
-            var directionVector = new BABYLON.Vector3();
-            window.addEventListener("mousemove", function () {
-                var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-                if (pickResult.hit) {
-                    var direction = pickResult.pickedPoint;
-                    directionVector = direction.subtract(player.position);  
-                    player.lookAt(direction);
-                }
-            });
-            window.addEventListener("mousedown", function () {
-                keys.forward = true;
-            });
-            window.addEventListener("mouseup", function () {
-                keys.forward = false;
-            });
-            */
-
             /******* Add the create scene function ******/
             var createScene = function () {
 
@@ -244,7 +226,6 @@
                 
                     // Lights
                     var light0 = new BABYLON.DirectionalLight("Omni", new BABYLON.Vector3(-2, -5, 2), scene);
-//                    var light1 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(2, -5, -2), scene);
                     var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, 1, 0), scene);
 
                     createRoad(scene);
@@ -272,12 +253,13 @@
 
             var scene = createScene(); //Call the createScene function
 
-            var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
+            //var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
             var klunks = [];
             for (let index = 1; index < 6; index++) {
                 klunk = new BABYLON.Sound("klunk" + index, "klunk" + index + ".wav", scene)
                 klunks.push(klunk);                
             }
+            var falling = new BABYLON.Sound("falling", "fallingdown.wav", scene)
             
             var score = 0.0;
 
@@ -306,6 +288,17 @@
                     unitvector = directionVector.normalize();		
                     player.position.x += unitvector.x / 5;		
                     player.position.z += unitvector.z / 5;			
+                }
+
+                // Check if player died
+                var tmp = new BABYLON.Vector3(player.position.x, 0, player.position.z);
+                var magnitude = tmp.length();
+                if (magnitude < 30 || magnitude > 50) {
+                    player.position.y -= 1 ; // Gravity
+                    if (player.alive && !falling.isPlaying) {
+                        falling.play();
+                    }
+                    player.alive = false;
                 }
 
                 var numDisabled = 0;
