@@ -198,6 +198,8 @@
                 rightArm.parent = playerTorso;
 
                 player.alive = true;
+                player.angleX = 0;
+                player.angleY = 0;
             }
 
             var allBeers = [];
@@ -320,6 +322,13 @@
                 var magnitude = tmp.length();
                 if (magnitude < roadInnerBorder || magnitude > roadOuterBorder) {
                     player.position.y -= 1 ; // Gravity
+                    if (player.angleX != 70) {
+                        player.angleX += 1;
+                        player.rotate(BABYLON.Axis.X, player.angleX* Math.PI / 180, BABYLON.Space.LOCAL);
+                    } else {
+                        camera.lockedTarget = null;
+                    }
+                    
                     if (player.alive && !falling.isPlaying) {
                         falling.play();
                     }
