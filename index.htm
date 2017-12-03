@@ -157,7 +157,6 @@
                 var playerDiameter = playerRadius*2;
                 player = BABYLON.MeshBuilder.CreateSphere("player", {diameter: playerDiameter}, scene);
                 player.position = new BABYLON.Vector3(35, playerRadius, 0);
-                //player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
                 player.material = snow;
 
                 var torsoRadius = playerRadius*0.75;
@@ -166,7 +165,6 @@
                 playerTorso.parent = player;
                 playerTorso.position = new BABYLON.Vector3(0, playerRadius+torsoRadius, 0);
                 playerTorso.material = snow;
-                //playerTorso.physicsImpostor = new BABYLON.PhysicsImpostor(playerTorso, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
                 var headRadius = torsoRadius*0.75;
                 var headDiameter = headRadius*2;
@@ -174,7 +172,6 @@
                 playerHead.parent = playerTorso;
                 playerHead.position = new BABYLON.Vector3(0, torsoRadius+headRadius, 0);
                 playerHead.material = snow;
-                //playerHead.physicsImpostor = new BABYLON.PhysicsImpostor(playerHead, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
                 var noseRadius = 0.025;
                 var noseDiameter = noseRadius*2;
@@ -182,10 +179,23 @@
                 playerNose.parent = playerHead;
                 playerNose.position = new BABYLON.Vector3(0, 0, (headRadius+noseRadius)*-1.0);
                 playerNose.material = carrot;
-                //playerNose.physicsImpostor = new BABYLON.PhysicsImpostor(playerNose, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
 
-                //playerHead.physicsImpostor.createJoint(playerTorso.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
-                //playerTorso.physicsImpostor.createJoint(player.physicsImpostor, BABYLON.PhysicsJoint.DistanceJoint, {});
+                var arm = [
+                    new BABYLON.Vector3(torsoRadius*0.8, torsoRadius*0.6, 0),
+                    new BABYLON.Vector3(torsoRadius+0.8, -torsoRadius-0.2, 0)
+                ];
+                var armColors = [
+                    new BABYLON.Color4(0.6,0.4,0.6,1.0),
+                    new BABYLON.Color4(0.6,0.4,0.6,1.0)
+                ];
+                var leftArm = BABYLON.MeshBuilder.CreateLines("leftArm", {points: arm, colors: armColors}, scene);
+                leftArm.parent = playerTorso;
+                arm = [
+                    new BABYLON.Vector3(-torsoRadius*0.8, torsoRadius*0.6, 0),
+                    new BABYLON.Vector3(-torsoRadius-0.8, -torsoRadius-0.2, 0)
+                ];
+                var rightArm = BABYLON.MeshBuilder.CreateLines("rightArm", {points: arm, colors: armColors}, scene);
+                rightArm.parent = playerTorso;
 
                 player.alive = true;
             }
