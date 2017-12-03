@@ -67,12 +67,17 @@
                 keys.right=false;    
             }    
             if (evt.keyCode==87) {        
-                keys.forward=false;    
+                //keys.forward=false;    
             }    
             if (evt.keyCode==83) {        
                 keys.back=false;    
             }
         }
+
+        var roadWidth = 15.0;
+        var roadCenter = 40;
+        var roadInnerBorder = roadCenter - roadWidth/2.0;
+        var roadOuterBorder = roadCenter + roadWidth/2.0;
 
             var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
 
@@ -83,19 +88,19 @@
                 var greyMaterial = new BABYLON.StandardMaterial("greyGroundMat", scene);
                 greyMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
                 greyMaterial.backFaceCulling = false;
-                var greySegment = BABYLON.Mesh.CreatePlane("greyGround", 20.0, scene);
+                var greySegment = BABYLON.Mesh.CreatePlane("greyGround", roadWidth, scene);
                 greySegment.material = greyMaterial;
                 greySegment.setEnabled(false);
 
                 var darkgreyMaterial = new BABYLON.StandardMaterial("darkgreyGroundMat", scene);
                 darkgreyMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
                 darkgreyMaterial.backFaceCulling = false;
-                var darkgreySegment = BABYLON.Mesh.CreatePlane("darkgreyGround", 20.0, scene);
+                var darkgreySegment = BABYLON.Mesh.CreatePlane("darkgreyGround", roadWidth, scene);
                 darkgreySegment.material = darkgreyMaterial;
                 darkgreySegment.setEnabled(false);
 
                 // Circular race track
-                var x = 40; // meters from origo => radius
+                var x = roadCenter; // meters from origo => radius
                 var y = 0; // ground
                 var z = 0; // first segment of the road
 
@@ -123,7 +128,6 @@
                     //segment.physicsImpostor = new BABYLON.PhysicsImpostor(segment, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
 
                     angle += angleIncrement;
-                    //z += 20.0;
                 }
             }
 
@@ -199,7 +203,7 @@
                 beerTemplate.material = beerMaterial;
                 beerTemplate.setEnabled(false);
 
-                var x = -40;
+                var x = -roadCenter;
                 var y = 0.5;
                 var z = 0;
                 
@@ -298,7 +302,7 @@
                 // Check if player died
                 var tmp = new BABYLON.Vector3(player.position.x, 0, player.position.z);
                 var magnitude = tmp.length();
-                if (magnitude < 30 || magnitude > 50) {
+                if (magnitude < roadInnerBorder || magnitude > roadOuterBorder) {
                     player.position.y -= 1 ; // Gravity
                     if (player.alive && !falling.isPlaying) {
                         falling.play();
