@@ -42,24 +42,29 @@
         window.addEventListener("keydown", handleKeyDown, false);
         window.addEventListener("keyup", handleKeyUp, false);
         function handleKeyDown(evt){    
-            if (evt.keyCode==65) {
-                //A        
-                keys.left=true;    
+            if (evt.keyCode==65 || evt.keyCode==37) {
+                //A or left arrow
+                if (keys.right == true) {
+                    keys.right = false;
+                } else {
+                    keys.left=true;
+                }
             }    
-            if (evt.keyCode==68) {
-                //D        
-                keys.right=true;    
+            if (evt.keyCode==68 || evt.keyCode==39) {
+                //D or right arrow
+                if (keys.left == true) {
+                    keys.left = false;
+                } else {
+                    keys.right=true;    
+                }
             }    
-            if (evt.keyCode==87) {
-                //W        
+            if (evt.keyCode==87 || evt.keycode==32 || evt.keyCode==38) {
+                //W or space or up arrow
                 keys.forward=true;    
             }    
-            if (evt.keyCode==83) {
-                //S        
-                keys.back=true;    
-            }
         }
-        function handleKeyUp(evt) {    
+        function handleKeyUp(evt) {
+            /*    
             if (evt.keyCode==65) {        
                 keys.left=false;    
             }    
@@ -72,6 +77,7 @@
             if (evt.keyCode==83) {        
                 keys.back=false;    
             }
+            */
         }
 
         var roadWidth = 15.0;
@@ -262,7 +268,7 @@
 
             var scene = createScene(); //Call the createScene function
 
-            var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
+            //var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
             var klunks = [];
             for (let index = 1; index < 6; index++) {
                 klunk = new BABYLON.Sound("klunk" + index, "klunk" + index + ".wav", scene)
