@@ -181,6 +181,28 @@
                 playerHead.position = new BABYLON.Vector3(0, torsoRadius+headRadius, 0);
                 playerHead.material = snow;
 
+
+                var hatMaterial = new BABYLON.StandardMaterial("hatMat", scene);
+                hatMaterial.diffuseColor = new BABYLON.Color3(0.5,0.0,0.1,1.0);
+                hatMaterial.backFaceCulling = false;
+
+                var faceColors = [
+                new BABYLON.Color4(0.5,0.0,0.1,1.0),
+                new BABYLON.Color4(0.5,0.0,0.1,1.0),
+                new BABYLON.Color4(0.5,0.0,0.1,1.0)
+                ];
+                var hatcylinder = BABYLON.MeshBuilder.CreateCylinder("hat", {tessellation: 40, height: 0.6, diameter: headDiameter*0.8}, scene);
+                hatcylinder.parent = playerHead;
+                hatcylinder.position = new BABYLON.Vector3(0, 0.4, 0);
+                hatcylinder.material = hatMaterial;
+
+                var hatDisc = BABYLON.MeshBuilder.CreateDisc("hatDisc", {tessellation: 40, radius: 0.6}, scene);
+                hatDisc.parent = hatcylinder;
+                hatDisc.position = new BABYLON.Vector3(0, -0.1, 0);
+                hatDisc.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.LOCAL);
+                hatDisc.material = hatMaterial;
+
+
                 var noseRadius = 0.025;
                 var noseDiameter = noseRadius*2;
                 playerNose = BABYLON.MeshBuilder.CreateSphere("playerNose", {diameter: noseDiameter}, scene);
