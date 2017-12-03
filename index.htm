@@ -364,9 +364,24 @@
             var music = new BABYLON.Sound("Music", "music.wav", scene, null, { loop: true, autoplay: true });
             var klunks = [];
             for (let index = 1; index < 6; index++) {
-                klunk = new BABYLON.Sound("klunk" + index, "klunk" + index + ".wav", scene)
+                var klunk = new BABYLON.Sound("klunk" + index, "klunk" + index + ".wav", scene)
                 klunks.push(klunk);                
             }
+            // some extra sentences
+            var sentences = [];
+            var klunk = new BABYLON.Sound("aah", "ahh.wav", scene)
+            sentences.push(klunk); 
+            var klunk = new BABYLON.Sound("party", "party.wav", scene)
+            sentences.push(klunk); 
+            var klunk = new BABYLON.Sound("notthatdrunk", "notthatdrunk.wav", scene)
+            sentences.push(klunk); 
+            var klunk = new BABYLON.Sound("needbeer", "needbeer.wav", scene)
+            sentences.push(klunk); 
+            var klunk = new BABYLON.Sound("bestfriend", "bestfriend.wav", scene)
+            sentences.push(klunk); 
+            var klunk = new BABYLON.Sound("bestnight", "bestnight.wav", scene)
+            sentences.push(klunk); 
+
             var falling = new BABYLON.Sound("falling", "fallingdown.wav", scene)
             
             var score = 0.0;
@@ -434,11 +449,18 @@
                     if (element.isEnabled()) {
 
                         if (player.intersectsMesh(element, false)) {
+                            score += 1;
+
                             element.setEnabled(false);
                             element.restartCount = 50*10;
 
-                            var klunkIdx = Math.floor(Math.random() * klunks.length);
-                            klunks[klunkIdx].play();
+                            if (score % 3 == 0) {
+                                var klunkIdx = Math.floor(Math.random() * sentences.length);
+                                sentences[klunkIdx].play();
+                            } else {
+                                var klunkIdx = Math.floor(Math.random() * klunks.length);
+                                klunks[klunkIdx].play();
+                            }
 
                             var particleSystem = new BABYLON.ParticleSystem("particles", 100, scene);
                             particleSystem.particleTexture = new BABYLON.Texture("beer.png", scene);
@@ -446,7 +468,7 @@
                             particleSystem.disposeOnStop = true;
                             particleSystem.targetStopDuration = 1;
                             particleSystem.start();
-                            score += 1;
+                            
                         }
                     } else {
                         element.restartCount -= 1;
